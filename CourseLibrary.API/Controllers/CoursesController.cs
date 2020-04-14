@@ -54,12 +54,13 @@ namespace CourseLibrary.API.Controllers
             return Ok(_mapper.Map<CourseDto>(courseFromRepo));
         }
 
-        public ActionResult<CourseDto> CreateCourse(
+        [HttpPost]
+        public ActionResult<CourseDto> CreateCourseForAuthor(
             Guid authorId, CourseForCreationDto course)
         {
             if (!_courseLibraryRepository.AuthorExists(authorId))
             {
-                return NotFound();            
+                return NotFound();
             }
 
             var courseEntity = _mapper.Map<Entities.Course>(course);
@@ -67,9 +68,8 @@ namespace CourseLibrary.API.Controllers
             _courseLibraryRepository.Save();
 
             var courseToReturn = _mapper.Map<CourseDto>(courseEntity);
-
             return CreatedAtRoute("GetCourseForAuthor",
-                new { authorId = courseEntity.AuthorId, courseId = courseEntity.Id  },
+                new { authorId = authorId, courseId = courseToReturn.Id },
                 courseToReturn);
         }
 
